@@ -128,9 +128,9 @@ Place language-specific patterns in `~/.claude/knowledge/security/`:
 
 ### Design exploration
 Use `--design` to invoke brainstorming before reviewing. This requires the
-`superpowers:brainstorming` skill from [piercelamb/superpowers](https://github.com/piercelamb/superpowers-claude-code)
-(available as a Claude Code plugin). If not installed, the `--design` flag is
-silently skipped and the review proceeds normally.
+`superpowers` plugin: install with `claude plugin add superpowers` (official
+Claude Code plugin). If not installed, the `--design` flag is silently skipped
+and the review proceeds normally.
 
 ## Design Philosophy
 

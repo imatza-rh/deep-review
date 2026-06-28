@@ -11,6 +11,12 @@ Parse the input to extract platform and identifier:
 - `!N` or `mr N` -> GitLab MR in current project
 - `#N` -> GitHub PR in current project
 
+**Prerequisite check**: verify the required CLI tool is installed before proceeding.
+For GitLab MRs: `which glab >/dev/null 2>&1` — if missing, report "glab CLI required
+for GitLab MR reviews. Install: https://gitlab.com/gitlab-org/cli" and stop.
+For GitHub PRs: `which gh >/dev/null 2>&1` — if missing, report "gh CLI required
+for GitHub PR reviews. Install: https://cli.github.com/" and stop.
+
 **Fetch metadata and diff in parallel:**
 
 GitLab:

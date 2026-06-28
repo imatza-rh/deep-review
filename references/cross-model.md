@@ -3,6 +3,11 @@
 How to dispatch review agents to each model family. The skill reads `config.md`
 to determine which families are available and adapts dispatch accordingly.
 
+**Model names in this file** (e.g., `gpt-5.5`, `claude-4.6-sonnet-medium`) are
+examples from mid-2026. Replace with your tool's current default or best model.
+Run `codex --help`, `cursor agent models`, or `bob --help` to find available
+model IDs. When in doubt, omit the `--model` flag to use the tool's default.
+
 ## General Principles
 
 - **Different models catch different bugs.** Claude excels at logic and nuance.

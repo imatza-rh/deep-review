@@ -34,10 +34,10 @@ The skill reads this config at Phase 0 and selects a tier:
 
 | Tier | Requirement | Agents | What you get |
 |------|------------|--------|-------------|
-| **Solo** | Claude only | 3-4 | Full methodology, all phases, Claude perspectives |
-| **Dual** | Claude + 1 other | 6-8 | + cross-model verification, contrarian angle |
-| **Full** | Claude + 2 others | 10-12 | + platform, architecture, security specialists |
-| **Max** | Claude + 3+ others | 12-21 | All perspectives, content layer for deliverables |
+| **Solo** | Claude only | 3-6 | Full methodology, all phases, Claude perspectives (3 code + up to 3 content for deliverables) |
+| **Dual** | Claude + 1 other | 6-10 | + cross-model verification, contrarian angle |
+| **Full** | Claude + 2 others | 10-14 | + platform, architecture, security specialists |
+| **Max** | Claude + 3+ others | 12-21 | All perspectives across all model families |
 
 Solo is NOT degraded — it runs every phase with full depth. Additional
 models add COVERAGE (different blind spots), not depth.

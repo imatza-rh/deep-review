@@ -5,7 +5,7 @@ argument-hint: "[scope: staged | last commit | last N commits | file/dir path | 
 user_invocable: true
 dependencies:
   cli: [git]
-allowed-tools: [Read, Glob, Grep, Agent, Skill, Bash(git diff:*), Bash(git log:*), Bash(git show:*), Bash(git blame:*), Bash(git status:*), Bash(git rev-parse:*), Bash(git diff-tree:*), Bash(git fetch:*), Bash(wc:*), Bash(grep:*), Bash(head:*), Bash(sed:*), Bash(python3:*), Bash(open:*), Bash(screencapture:*), Bash(gh:*), Bash(glab:*), Bash(GITLAB_HOST=*), Bash(codex:*), Bash(cursor:*), Bash(timeout*bob:*), Bash(bob:*)]
+allowed-tools: [Read, Agent, Skill, Bash(git diff:*), Bash(git log:*), Bash(git show:*), Bash(git blame:*), Bash(git status:*), Bash(git rev-parse:*), Bash(git diff-tree:*), Bash(git fetch:*), Bash(wc:*), Bash(grep:*), Bash(head:*), Bash(sed:*), Bash(python3:*), Bash(open:*), Bash(screencapture:*), Bash(gh:*), Bash(glab:*), Bash(GITLAB_HOST=*), Bash(codex:*), Bash(cursor:*), Bash(timeout*bob:*), Bash(bob:*)]
 ---
 
 ## Purpose
@@ -81,7 +81,7 @@ If `config.md` is not readable or not configured, default to **Solo tier**
 ```
 Tier: [Solo / Dual / Full / Max]
 Available: Claude=Y, Gemini=[Y/N], Codex=[Y/N], Cursor=[Y/N], Bob=[Y/N]
-Agent budget: [3-4 / 6-8 / 10-12 / 12-21]
+Agent budget: [3-6 / 6-10 / 10-14 / 12-21]
 ```
 
 ### Fast Path
@@ -102,7 +102,7 @@ Fast path EXCLUDES changes that add new data sources, repos, endpoints, or confi
 
 ### Trivial Tier
 
-For changes that FAIL fast-path but are still very small (<=10 code-relevant lines, <=5 files, no security-sensitive files): run Phase 1 + own analysis + 2 cross-model agents. Skip the full perspective sweep.
+For changes that FAIL fast-path but are still very small (<=10 code-relevant lines, <=5 files, no security-sensitive files): run Phase 1 + own analysis + up to 2 cross-model agents (if available per your tier). Skip the full perspective sweep. Solo tier runs Phase 1 + own analysis only.
 
 **RENDERED GATE:**
 ```
@@ -310,17 +310,22 @@ Read `references/perspectives.md` for full prompt templates and dispatch rules p
 - Codex/Bob/Cursor: `Bash(run_in_background: true)` writing to result files
 - Content perspectives (C1-C9): ONLY for deliverables (presentations, reports, proposals, READMEs >500 words)
 
-**DISPATCH LEDGER (RENDERED before dispatching):**
+**DISPATCH LEDGER (RENDERED before dispatching — adapt rows to your tier):**
 ```
-| # | Agent | Model | Dispatched? |
-|---|-------|-------|-------------|
-| P3a | Senior Eng | Claude | _fill_ |
-| P3b | Skeptic | Claude | _fill_ |
-| P6 | Accessibility | Claude | _fill_ |
-| ... | ... | ... | ... |
-| **Total** | | | **_/N** |
+Tier: [Solo / Dual / Full / Max]
+
+| # | Agent | Model | Required for tier? | Dispatched? |
+|---|-------|-------|--------------------|-------------|
+| P3a | Senior Eng | Claude | Solo+ | _fill_ |
+| P3b | Skeptic | Claude | Solo+ | _fill_ |
+| P6 | Accessibility | Claude | Solo+ | _fill_ |
+| P1a | UX | Gemini/Claude | Dual+ | _fill_ or N/A |
+| P2a | QE | Codex/Claude | Full+ | _fill_ or N/A |
+| P4a | Platform | Bob/Claude | Full+ | _fill_ or N/A |
+| P5a | Architecture | Cursor/Claude | Full+ | _fill_ or N/A |
+| **Total** | | | | **_/N** |
 ```
-Any ALWAYS row with blank Dispatched? -> STOP and dispatch.
+Rows marked N/A for your tier are skipped — not failures. Only rows matching your tier with blank Dispatched? need action.
 
 ---
 
@@ -376,14 +381,16 @@ If gaps exist, INVESTIGATE immediately — don't present them as questions.
 
 ### Phase 3.7: Merge Cross-Model Findings
 
-**RENDERED before merging:**
+**Solo tier**: skip cross-model collection — proceed directly to contradiction detection with your own findings + Claude agent perspectives.
+
+**Dual+ tiers — RENDERED before merging:**
 ```
 Independent review complete:
-- Phase 0 agents: [list launched / "Solo tier"]
+- Phase 0 agents: [list launched / "Solo tier — skip"]
 - Dimensions checked: [list from checklist.md]
 - Own findings: [count] (list titles)
 - Phase 3.5 gate: [PASS / items marked N/A]
-- Perspectives: [P1=result ... P7=result, per tier]
+- Perspectives: [P1=result ... P7=result, per tier — N/A for unavailable]
 - Models: [families with agent counts]
 ```
 
