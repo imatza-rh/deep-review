@@ -12,7 +12,7 @@ reader spots.
   deep analysis, multi-perspective review, verification/filtering, structured reporting
 - **Adaptive multi-model dispatch** — works with Claude alone, scales up automatically
   as you add Gemini, Codex, Cursor, or Bob Shell
-- **21 analysis dimensions** — correctness, security (data-flow tracing), error handling,
+- **18 analysis dimensions** — correctness, security (data-flow tracing), error handling,
   performance, API contracts, container hardening, K8s/OCP manifests, MCP server security,
   CI pipeline security, visual/UX, and more
 - **Up to 21 perspective agents** — reviews from UX designer, QE engineer, senior architect,
@@ -80,7 +80,7 @@ models add cognitive diversity (different blind spots), not depth.
 SKILL.md                    # Main orchestrator (~300 lines)
 config.md                   # Your tool configuration
 references/
-  checklist.md              # 21 analysis dimensions
+  checklist.md              # 18 analysis dimensions
   patterns.md               # Language-specific security patterns
   examples.md               # Severity calibration examples
   agents.md                 # Agent prompt templates
