@@ -3,6 +3,7 @@ name: deep-review
 description: "Deep code review with verification - correctness, security, performance, and robustness analysis. ALWAYS use this skill when the user mentions: reviewing code, checking changes, auditing a file or directory, verifying a commit, 'is this safe to merge', 'review my last commit', 'check my changes', 'deep review', 'audit this', 'make sure it's secure', 'look for bugs', or any request to thoroughly examine code for correctness, security, performance, or quality. Also triggers on: 'review staged changes', 'pre-commit check', reviewing specific files or directories, commit ranges, 'what I changed today', security audits, and verifying refactors didn't break anything. For MR/PR reviews: 'deep review MR', 'thorough review', 'should this merge', 'is this MR safe'. NOT for quick MR/PR glances - use a lighter review skill for those."
 argument-hint: "[scope: staged | last commit | last N commits | file/dir path | commit range | MR/PR URL | !N | #N] [--design | --re-review | --follow-up]"
 user-invocable: true
+effort: high
 dependencies:
   cli: [git]
 allowed-tools: [Read, Agent, Skill, Bash(git diff:*), Bash(git log:*), Bash(git show:*), Bash(git blame:*), Bash(git status:*), Bash(git rev-parse:*), Bash(git diff-tree:*), Bash(git fetch:*), Bash(wc:*), Bash(grep:*), Bash(head:*), Bash(sed:*), Bash(python3:*), Bash(open:*), Bash(screencapture:*), Bash(gh:*), Bash(glab:*), Bash(GITLAB_HOST=*), Bash(codex:*), Bash(cursor:*), Bash(timeout*bob:*), Bash(bob:*)]
@@ -25,6 +26,8 @@ $ARGUMENTS
 - Recent commits: !`git log --oneline -5 2>/dev/null || echo "N/A"`
 - Diff size: !`git diff --stat 2>/dev/null || echo "N/A"`
 - Project conventions: !`head -30 CLAUDE.md 2>/dev/null || echo "No CLAUDE.md"`
+- Review hints: !`cat .review-hints.md 2>/dev/null || echo "(none)"`
+- Skill directory: !`echo "${CLAUDE_SKILL_DIR:-$(dirname "$0")}"`
 
 ## Ground Rules
 
@@ -438,6 +441,22 @@ For MR/PR reviews, read `references/mr-review.md` § Phase 4.5 for auto-draft me
 - Max 2-3 sentences each, suggestive tone
 - Create as PENDING review (not published)
 - Verify patchset freshness before posting
+
+### Phase 4.9: Report Self-Validation (before presenting)
+
+Before presenting the report to the user, validate it yourself. Great
+reviews produce second-draft quality — the user never sees the rough pass.
+
+**Quick scan checklist (silent — fix issues, don't report them):**
+- Every `file:line` citation: does the line still say what you claim?
+- Every severity: is this the right level given the evidence gathered?
+- Findings count: does it match the Phase 3.9 final list?
+- Verdict: consistent with the findings? (no Critical + CLEAN, no 0 findings + BLOCK)
+- Report length: under findings cap? (10 for diffs, 20 for MR/PR)
+- Duplicate check: any two findings about the same underlying issue?
+
+If any check fails, fix before presenting. This step costs ~10 seconds
+and prevents the most common post-report corrections.
 
 ### Phase 5: Feedback Capture
 
