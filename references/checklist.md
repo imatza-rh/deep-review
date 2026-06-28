@@ -11,7 +11,7 @@ Walk through each applicable dimension for the changed code. Skip dimensions tha
 - **Author-pattern comparison**: compare how the author handles the SAME concern in different parts of this change. If the author restricts binding on one socket but uses `0.0.0.0` on another, or validates input in one handler but not a sibling, the inconsistency is a finding the author will agree with — their own code proves they know the better pattern.
 - **Three adversary test** (only for changes that define APIs, configs, defaults, or public interfaces — skip for internal logic, bug fixes, and refactors): beyond the security attacker, consider the **lazy developer** (copies the first example they find — is the easy/default path secure?) and the **confused developer** (misreads the API, swaps parameters, uses wrong enum — does the code fail safely or silently corrupt?). If the default behavior is insecure or parameter swap compiles without error, flag it.
 - **Code comment compliance & rot**: check if the change violates directives in existing code comments (`TODO`, `FIXME`, `IMPORTANT`, `NOTE`, `HACK`, `WARN`, `XXX`). If a comment says "always call cleanup() after this" and the PR adds a new caller that doesn't, that's a `confirmed` bug. Also check the reverse: does the change make existing comments INACCURATE? A function comment saying "returns sorted list" when the sort was removed is comment rot — worse than no comment. Grep changed files for comments in the same function/block as changed lines and verify each still matches the code.
-- **Absolute language vs counter-examples**: grep changed documentation files for absolute claims (`Never`, `Always`, `Must`, `Every`, `No exception`). For EACH match: verify against the codebase with a targeted grep. If a counter-example exists in code (the code does the thing the doc says "never" to do), flag as incorrect absolute claim. A doc saying "Never use HasPrefix for security matching" with `strings.HasPrefix` in the actual security code is a `confirmed` inconsistency — either the doc or the code is wrong. (Source: gwenneg/claude-engineering-toolkit)
+- **Absolute language vs counter-examples**: grep changed documentation files for absolute claims (`Never`, `Always`, `Must`, `Every`, `No exception`). For EACH match: verify against the codebase with a targeted grep. If a counter-example exists in code (the code does the thing the doc says "never" to do), flag as incorrect absolute claim. A doc saying "Never use HasPrefix for security matching" with `strings.HasPrefix` in the actual security code is a `confirmed` inconsistency — either the doc or the code is wrong.
 
 ## Security (data-flow analysis)
 - Trace external inputs from entry through all transformations to sinks (taint analysis)
@@ -41,7 +41,7 @@ Walk through each applicable dimension for the changed code. Skip dimensions tha
 - Does the change honor its interface contract (types, return values, side effects)?
 - Backward compatibility — does the change require callers to update?
 - Blast radius — grep for all usages of changed functions/variables/configs. For each direct caller, grep for ITS callers too (2-level trace). For config/variable changes: grep the codebase for all consumers of the value. Report in the `## Verified` section: "Blast radius: N direct + M transitive callers — `file_a.py:30` → `file_b.py:55`"
-- Semantic impact (for heterogeneous repos with YAML/config/docs alongside code) — structural blast radius (grep/callers) misses non-code relationships. For each changed file: (1) classify its category (code/config/docs/infra/data/script/markup), (2) expand 1-hop via category-appropriate references (config: what reads this YAML key; infra: what depends on this Dockerfile; docs: what references this section), (3) list affected business capabilities. This catches impact chains that structural BFS misses — e.g., a YAML variable rename affecting 5 Ansible roles that grep for the old name, or a Dockerfile base image change affecting all services built from it. Report as: "Semantic impact: N files across M categories — [config: what changed] → [code: N consumers] → [capability: what breaks]." (Source: Understand-Anything diff-analyzer pattern)
+- Semantic impact (for heterogeneous repos with YAML/config/docs alongside code) — structural blast radius (grep/callers) misses non-code relationships. For each changed file: (1) classify its category (code/config/docs/infra/data/script/markup), (2) expand 1-hop via category-appropriate references (config: what reads this YAML key; infra: what depends on this Dockerfile; docs: what references this section), (3) list affected business capabilities. This catches impact chains that structural BFS misses — e.g., a YAML variable rename affecting 5 Ansible roles that grep for the old name, or a Dockerfile base image change affecting all services built from it. Report as: "Semantic impact: N files across M categories — [config: what changed] → [code: N consumers] → [capability: what breaks]."
 - New-caller side effects — when new code calls an existing function, check whether ALL of the called function's behaviors (not just the one you care about) are appropriate for the new calling context. A function designed for context A (search text changes → preserve table selection) may have wrong side effects in context B (folder switch → should reset selection). Read the full body of each called function, list every side effect, verify each one.
 
 ## Dependencies (when dependency changes are in scope)
@@ -79,7 +79,6 @@ Walk through each applicable dimension for the changed code. Skip dimensions tha
 - Read-only rootfs where possible
 - No package manager cache in final layer
 - HEALTHCHECK defined (standalone Docker; skip for containers that run inside K8s pods where probes handle health)
-(Source: prodsec-skills coderabbit.yaml, container-hardening block)
 
 ## Kubernetes/OpenShift Manifests (when YAML manifests, Helm templates, or operator configs are in scope)
 - securityContext: runAsNonRoot, readOnlyRootFilesystem, allowPrivilegeEscalation: false
@@ -92,7 +91,6 @@ Walk through each applicable dimension for the changed code. Skip dimensions tha
 - automountServiceAccountToken: false unless needed
 - RBAC: least privilege; no cluster-admin for workloads
 - Helm: no .Values interpolation in shell commands
-(Source: prodsec-skills coderabbit.yaml, scc-security + operator-security block)
 
 ## MCP Server Security (when MCP server code is in scope)
 - Sanitize all tool inputs against declared schemas
@@ -101,15 +99,13 @@ Walk through each applicable dimension for the changed code. Skip dimensions tha
 - Tool injection: validate registry integrity, reject dynamic tool loading from untrusted sources
 - Audit log all tool invocations with caller identity
 - Rate limiting per client/scope
-(Source: prodsec-skills coderabbit.yaml, hardening-local + hardening-remote block)
 
 ## LLM Output Steganography (when AI-generated text is in scope — commit messages, PR descriptions, code comments, log output, generated configs)
 - LLM output can carry hidden messages via probability-rank selection (Calgacus protocol, ICLR 2026). The stegotext is statistically indistinguishable from normal output — pattern-matching tools (gitleaks, regex, OWASP scanners) CANNOT detect it.
 - Threat model: data exfiltration (NOT prompt injection). A compromised dependency could use any text field as a covert channel.
 - CI environments are especially vulnerable: pinned Docker images, GPU runner tags, and declarative job configs satisfy the hardware-determinism constraint Calgacus requires — by design.
 - No detection mechanism exists for this class of attack. Awareness-only: flag AI-generated text in security-sensitive output paths.
-- Related: tokenizer tampering (HiddenLayer) — modified tokenizer.json can change model outputs without altering weights.
-(Source: [arxiv 2510.20075](https://arxiv.org/abs/2510.20075), @arewm #forum-pnd-ai-community data exfiltration framing)
+- Related: tokenizer tampering (HiddenLayer) — modified tokenizer.json can change model outputs without altering weights., @arewm #forum-pnd-ai-community data exfiltration framing)
 
 ## Agentic / Multi-Agent Security (when agent systems, MCP clients, or multi-agent workflows are in scope)
 - Agent identity: agents MUST have own identity, not impersonate human users (audit trail, blast radius)
@@ -118,7 +114,6 @@ Walk through each applicable dimension for the changed code. Skip dimensions tha
 - Prompt injection mitigation: layered defense (runtime guardrails, model safety benchmarks, input/output filtering); no single control is sufficient
 - Agentic actions auditor: check CI workflows for attacker-controlled input reaching AI agent prompts (env var intermediary, expression injection, wildcard user allowlists)
 - MCP client auth: validate OAuth2 protected resource metadata; verify dynamic client registration; check client metadata support
-(Source: RedHatProductSecurity/prodsec-skills module/skills/ — agent-identity, agent-to-agent-auth, tool-server-injection-prevention, prompt-injection-mitigation, agentic-actions-auditor, mcp-client-* skills)
 
 ## AI Config Supply Chain (when .claude/, .cursor/, .vscode/, or agent config files are in scope)
 - `.claude/settings.json` with `command` key in hooks: confirmed Miasma malware IOC. ANY hook that runs curl, wget, node, python, bash, eval, or pipes to sh is CRITICAL
@@ -127,8 +122,7 @@ Walk through each applicable dimension for the changed code. Skip dimensions tha
 - Diff-collapsed config files: GitHub collapses files >300 lines. Check if `.claude/settings.json` changes are hidden in a collapsed diff section alongside legitimate changes
 - Agent config in PRs against repos that DON'T normally have `.claude/`: any PR adding `.claude/` to a repo that never had it is suspicious — verify with repo owner
 - CLAUDE.md instruction injection: new CLAUDE.md content that instructs the agent to execute commands, modify files outside the project, or exfiltrate data
-- Cross-reference: if the PR modifies BOTH code AND `.claude/` config, verify the config changes are necessary for the code changes. Unrelated config additions alongside code = high suspicion
-(Source: Miasma malware advisory (2024). See also: ai-guardian project.)
+- Cross-reference: if the PR modifies BOTH code AND `.claude/` config, verify the config changes are necessary for the code changes. Unrelated config additions alongside code = high suspicion. See also: ai-guardian project.)
 
 ## GitHub Actions / CI Pipeline Security (when .github/workflows or CI configs are in scope)
 - Pin actions by full SHA, not tag
@@ -137,7 +131,6 @@ Walk through each applicable dimension for the changed code. Skip dimensions tha
 - No pull_request_target with checkout of PR head
 - Agentic CI actions: audit for prompt injection via issue/PR title/body flowing into LLM prompts
 - Sign artifacts with Sigstore/cosign
-(Source: prodsec-skills coderabbit.yaml, secure-pipeline block)
 
 ## Go Security (when Go code is in scope)
 - Never ignore error returns
@@ -145,7 +138,6 @@ Walk through each applicable dimension for the changed code. Skip dimensions tha
 - Use stdlib crypto/* and golang.org/x/crypto; avoid third-party crypto libraries
 - Integer overflow: bounds-check user-supplied sizes
 - context.Context for cancellation and timeouts
-(Source: prodsec-skills coderabbit.yaml, go-security block)
 
 ## Visual & UX (when HTML, CSS, JSX/TSX, Vue, Svelte, or presentation files are in scope)
 

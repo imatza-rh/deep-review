@@ -141,15 +141,6 @@ and the review proceeds normally.
 - **Approach before correctness** — Phase 1.5 checks if the design is sound before Phase 2 checks syntax
 - **Risk-tiered** — fast-path for trivial changes, full sweep for complex ones
 
-## Credits
-
-Built on patterns from:
-- [RedHatProductSecurity/prodsec-skills](https://github.com/RedHatProductSecurity/prodsec-skills) — security checklists
-- [Cloudflare AI Code Review](https://blog.cloudflare.com/ai-code-review) — risk-tiered dispatch (validated across 131K reviews)
-- [Cursor BugBot](https://www.cursor.com/blog/bugbot) — randomized file ordering, self-improving feedback loop
-- [Anthropic claude-code pr-review-toolkit](https://github.com/anthropics/claude-code) — type invariant scoring
-- Karpathy's LLM Council pattern — parallel independent opinions + synthesis
-
 ## License
 
 Apache License 2.0 — see [LICENSE](LICENSE).
