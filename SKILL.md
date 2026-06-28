@@ -3,6 +3,9 @@ name: deep-review
 description: "Deep code review with verification - correctness, security, performance, and robustness analysis. ALWAYS use this skill when the user mentions: reviewing code, checking changes, auditing a file or directory, verifying a commit, 'is this safe to merge', 'review my last commit', 'check my changes', 'deep review', 'audit this', 'make sure it's secure', 'look for bugs', or any request to thoroughly examine code for correctness, security, performance, or quality. Also triggers on: 'review staged changes', 'pre-commit check', reviewing specific files or directories, commit ranges, 'what I changed today', security audits, and verifying refactors didn't break anything. For MR/PR reviews: 'deep review MR', 'thorough review', 'should this merge', 'is this MR safe'. NOT for quick MR/PR glances - use a lighter review skill for those."
 argument-hint: "[scope: staged | last commit | last N commits | file/dir path | commit range | MR/PR URL | !N | #N | --design]"
 user_invocable: true
+model: claude-opus-4-6
+dependencies:
+  cli: [git]
 allowed-tools: [Read, Glob, Grep, Agent, Skill, Bash(git diff:*), Bash(git log:*), Bash(git show:*), Bash(git blame:*), Bash(git status:*), Bash(git rev-parse:*), Bash(git diff-tree:*), Bash(git fetch:*), Bash(wc:*), Bash(grep:*), Bash(head:*), Bash(sed:*), Bash(python3:*), Bash(open:*), Bash(screencapture:*), Bash(gh:*), Bash(glab:*), Bash(GITLAB_HOST=*), Bash(codex:*), Bash(cursor:*), Bash(timeout*bob:*), Bash(bob:*)]
 ---
 
@@ -438,6 +441,16 @@ After presenting the report, if the user acts on findings:
 - Missed by review -> add pattern to `references/examples.md`
 
 ---
+
+## Common Mistakes
+
+These are the top failure modes from real usage — each one has caused multiple wasted review cycles.
+
+- **Reviewing only additions on MR/PR diffs** — `glab mr diff` and three-dot git diff both hide deletions and modifications. A seemingly "clean" MR that adds 76 lines may also delete 35 lines including critical configs. Always use two-dot scoped diff for MR reviews (see `references/mr-review.md`).
+- **Fast-pathing functional changes** — a 10-line label fix that changes test assertions IS a functional behavior change, not a trivial edit. The rendered fast-path gate exists precisely to make this rationalization visible. If any criterion fails, the verdict is FULL REVIEW.
+- **Skipping agents for "small" diffs** — small diffs in infrastructure code have outsized impact. The skill's tier system already handles this — trust it. If the tier says FULL, dispatch all agents even if the diff "looks simple."
+- **Trusting author replies over code** — when verifying review comments were addressed, read the ACTUAL CODE at the location. "I added pipefail" when the code switched to Python = N/A. Author replies are claims; code is evidence.
+- **Flagging established conventions** — before reporting a pattern as a bug, grep for it across the codebase. If 5+ sibling files use the same pattern, the author followed the convention — they didn't create the problem. Downgrade or drop.
 
 ## Gotchas
 
