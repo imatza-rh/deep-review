@@ -1,5 +1,7 @@
 # Calibration Examples
 
+> **Contents**: Ex 1 (Critical — SQL Injection) — Ex 2 (False Positive — Framework Handles It) — Ex 3 (Severity Calibration) — Ex 4 (Correctly Dropped) — Ex 5 (Suggestion)
+
 These worked examples calibrate severity classification and false positive filtering. Consult them when uncertain.
 
 ## Example 1: Real Finding — Critical (SQL Injection)

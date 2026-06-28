@@ -1,5 +1,7 @@
 # Role Perspective Agents
 
+> **Contents**: Dispatch Rules — LA-1 to LA-4 (Logic/Approach) — P1-P7 (Code Perspectives) — UX/DevEx/QE/DevOps/Senior Eng/PM Checklists — C1-C9 (Content Perspectives) — Aggregation
+
 Role-based review agents complement code-dimension agents (correctness,
 security, performance) by asking **different questions** about the same code.
 Code agents check IF the code works. Role agents check HOW the product

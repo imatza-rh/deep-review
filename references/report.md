@@ -1,5 +1,7 @@
 # Report Template & Formatting
 
+> **Contents**: Template — Files Table — Critical/Warnings/Suggestions — Design — Questions — Test Gaps — Notable — Submission (MR/PR) — Verified — Methodology — Verdict Criteria — Findings Cap — Audit Mode — Re-Review Verdict
+
 ## Template
 
 Use this format. Omit any section with no content.

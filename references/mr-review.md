@@ -1,5 +1,7 @@
 # MR/PR Review Mode
 
+> **Contents**: Data Fetching (Phase 0) — MR-Specific Phase 1 Steps — Phase 4.5 Auto-Draft — Completion Gate
+
 Extracted phases and checks specific to Merge Request / Pull Request reviews.
 Loaded when scope is an MR/PR (URL, `!N`, `#N`, or `mr N`).
 

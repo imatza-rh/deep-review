@@ -1,5 +1,7 @@
 # Language-Specific Review Patterns
 
+> **Contents**: Python — Go — Rust — Java — Shell/Bash — Ansible/YAML — JavaScript/TypeScript — Meta-Patterns (Language-Agnostic)
+
 High-signal patterns — issues that are both common and impactful. Consult for the relevant language.
 
 ## Python

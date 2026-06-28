@@ -1,5 +1,7 @@
 # Analysis Checklist
 
+> **Contents**: Correctness & Logic — Security (data-flow) — Error Handling — Performance — API & Contract — Dependencies — Test Quality — Codebase Alignment — Semantic Value — Container/Dockerfile — K8s/OpenShift — MCP Server — LLM Steganography — Agentic/Multi-Agent — AI Config Supply Chain — GitHub Actions/CI — Go Security — Visual & UX
+
 Walk through each applicable dimension for the changed code. Skip dimensions that don't apply (e.g., Dependencies for non-dependency changes, Test Quality when no test code changed). For findings that depend on runtime state you can't verify from code (e.g., what a DHCP server pushes, load balancer routing, service mesh config), add `runtime-needed` to the confidence tag and state what check would confirm or disprove it.
 
 ## Correctness & Logic

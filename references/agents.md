@@ -1,5 +1,7 @@
 # Agent Prompt Templates
 
+> **Contents**: Dispatch Rules — Per-File Review Agent — Cross-File Interaction Agent — Verification Agent — Aggregation
+
 When the diff exceeds 10 files or 500 lines, spawn parallel subagents to review
 high-risk files independently.
 

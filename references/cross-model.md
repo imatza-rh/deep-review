@@ -1,5 +1,7 @@
 # Cross-Model Dispatch Reference
 
+> **Contents**: General Principles — Gemini (MCP) — Codex/GPT (CLI) — Cursor Agent (CLI) — Bob/Granite (CLI) — Claude Agents — Tier-Based Counts — Result Validation — Fallback Chain
+
 How to dispatch review agents to each model family. The skill reads `config.md`
 to determine which families are available and adapts dispatch accordingly.
 

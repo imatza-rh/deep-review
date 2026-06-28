@@ -1,5 +1,7 @@
 # Re-Review Mode (Phases R0-R4)
 
+> **Contents**: R0 (Load Prior State) — R1 (Verify Each Comment) — R2 (Other Reviewers) — R3 (Incremental Analysis) — R3.5 (Self-Confidence Gate) — R4 (Verdict & Actions)
+
 Activated by `--re-review`, `--follow-up`, or natural language detection
 ("addressed", "verify the comments", "check if fixed", "is it ready after fixes?").
 
