@@ -3,7 +3,7 @@ name: deep-review
 description: "Deep code review with verification - correctness, security, performance, and robustness analysis. Use when reviewing code, checking changes, auditing files, verifying commits, or any request for thorough code examination. Triggers on: 'deep review', 'review my changes', 'check my code', 'is this safe to merge', 'audit this', 'review MR/PR'. NOT for quick glances (use soft-review)."
 argument-hint: "[scope: staged | last commit | last N commits | file/dir path | commit range | MR/PR URL | !N | #N | --design]"
 user_invocable: true
-allowed-tools: [Read, Glob, Grep, Agent, Skill, Bash(git diff:*), Bash(git log:*), Bash(git show:*), Bash(git blame:*), Bash(git status:*), Bash(git rev-parse:*), Bash(git diff-tree:*), Bash(git fetch:*), Bash(wc:*), Bash(grep:*), Bash(head:*), Bash(sed:*), Bash(python3:*), Bash(open:*), Bash(screencapture:*)]
+allowed-tools: [Read, Glob, Grep, Agent, Skill, Bash(git diff:*), Bash(git log:*), Bash(git show:*), Bash(git blame:*), Bash(git status:*), Bash(git rev-parse:*), Bash(git diff-tree:*), Bash(git fetch:*), Bash(wc:*), Bash(grep:*), Bash(head:*), Bash(sed:*), Bash(python3:*), Bash(open:*), Bash(screencapture:*), Bash(gh:*), Bash(glab:*), Bash(GITLAB_HOST=*), Bash(codex:*), Bash(cursor:*), Bash(timeout*bob:*), Bash(bob:*)]
 ---
 
 ## Purpose
@@ -72,7 +72,9 @@ If the determined scope covers less than half the implied scope, confirm the red
 
 ### Capability Detection
 
-Read `config.md` and determine the review tier:
+Read `config.md` (in this skill's directory) and determine the review tier.
+If `config.md` is not readable or not configured, default to **Solo tier**
+(Claude-only — all phases run, no cross-model agents):
 
 ```
 Tier: [Solo / Dual / Full / Max]

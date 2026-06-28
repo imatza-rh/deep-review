@@ -23,6 +23,16 @@ reader spots.
 - **Calibrated severity** — concrete triggers required for every finding, sibling-check
   to avoid flagging established patterns, verification agents to disprove findings
 
+## Prerequisites
+
+- [Claude Code](https://claude.ai/code) (required)
+- `git` (required)
+- `gh` CLI ([GitHub CLI](https://cli.github.com/)) — for GitHub PR reviews (`#N`)
+- `glab` CLI ([GitLab CLI](https://gitlab.com/gitlab-org/cli)) — for GitLab MR reviews (`!N`)
+
+The skill works without `gh`/`glab` for local diff and file reviews.
+MR/PR review mode requires the matching CLI for metadata fetching.
+
 ## Quick Start
 
 1. Copy the skill into your Claude Code skills directory:
@@ -117,8 +127,10 @@ Place language-specific patterns in `~/.claude/knowledge/security/`:
 - `wstg-v42-patterns.md` (Web apps)
 
 ### Design exploration
-Use `--design` to invoke brainstorming before reviewing. Requires the
-`superpowers:brainstorming` skill (fails gracefully if unavailable).
+Use `--design` to invoke brainstorming before reviewing. This requires the
+`superpowers:brainstorming` skill from [piercelamb/superpowers](https://github.com/piercelamb/superpowers-claude-code)
+(available as a Claude Code plugin). If not installed, the `--design` flag is
+silently skipped and the review proceeds normally.
 
 ## Design Philosophy
 

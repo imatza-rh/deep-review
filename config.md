@@ -69,3 +69,21 @@ Place language-specific security patterns in your knowledge directory:
 
 The skill loads the matching file when it detects that language in the diff.
 If the files don't exist, the skill uses the built-in `references/patterns.md`.
+
+## Allowed Tools (SKILL.md frontmatter)
+
+The `allowed-tools` list in SKILL.md covers Claude-native tools and git
+commands. If you enable cross-model tools, add their tool prefixes:
+
+```yaml
+# Gemini MCP:
+mcp__gemini-mcp-tool__ask-gemini
+mcp__gemini-35-flash__ask-gemini
+
+# Codex, Cursor, Bob run via Bash — already covered by Bash(codex:*) etc.
+# Add to allowed-tools if your setup needs explicit patterns:
+Bash(codex:*)
+Bash(cursor:*)
+Bash(timeout *bob:*)
+Bash(bob:*)
+```
