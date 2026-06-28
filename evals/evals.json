@@ -5,18 +5,54 @@
       "id": 1,
       "prompt": "/deep-review last commit",
       "expected_output": "A well-structured review of the last commit with proper severity classification, no false positives, and a clear verdict. Should use confidence tags (confirmed/likely/verify) and include the Files table if 3+ files changed.",
+      "assertions": [
+        {"text": "Report contains a verdict (BLOCK, REVIEW, or CLEAN)", "type": "contains_any", "values": ["BLOCK", "REVIEW", "CLEAN"]},
+        {"text": "Every finding uses a confidence tag", "type": "contains_any", "values": ["confirmed", "likely", "verify"]},
+        {"text": "Report includes a Methodology section", "type": "contains", "value": "Methodology"},
+        {"text": "Scope gate was rendered before analysis", "type": "contains", "value": "Scope:"}
+      ],
       "files": []
     },
     {
       "id": 2,
-      "prompt": "/deep-review staged",
-      "expected_output": "Review of staged changes only. If nothing is staged, should report 'Nothing staged for commit' and stop. Otherwise, full review of staged diff with appropriate tier selection.",
+      "prompt": "hey can you check my staged changes before I commit? I want to make sure there's nothing embarrassing in there",
+      "expected_output": "Should trigger deep-review with 'staged' scope. If nothing staged, report that clearly. Otherwise, full review with fast-path check rendered. The casual tone shouldn't prevent the skill from triggering.",
+      "assertions": [
+        {"text": "Skill triggered (not a generic response)", "type": "contains_any", "values": ["Phase", "Scope:", "Fast-path", "staged"]},
+        {"text": "Handles empty staging gracefully", "type": "custom", "note": "If nothing staged, says so clearly instead of reviewing everything"}
+      ],
       "files": []
     },
     {
       "id": 3,
-      "prompt": "/deep-review src/",
-      "expected_output": "Audit mode review of the src directory. Should negotiate scope if >200 files, dispatch parallel agents for 10+ files, and produce a project assessment covering CI gates, test infrastructure, and documentation quality.",
+      "prompt": "/deep-review src/auth/middleware.py",
+      "expected_output": "File-level audit of a security-sensitive file. Should identify the tech stack, note existing defenses, trace data flows for security findings, and include security-specific analysis dimensions. Should NOT fast-path even if the file is small, because auth files are security-sensitive.",
+      "assertions": [
+        {"text": "Fast-path check rendered and rejected (security file)", "type": "contains", "value": "Security-sensitive"},
+        {"text": "Security dimension analyzed with data-flow paths", "type": "contains_any", "values": ["data flow", "Data flow", "taint", "entry", "sink"]},
+        {"text": "Tech stack defenses identified", "type": "contains_any", "values": ["defense", "framework", "middleware", "ORM", "CSRF"]}
+      ],
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "is this PR safe to merge? https://github.com/example/repo/pull/42",
+      "expected_output": "Should trigger MR/PR review mode. Should fetch metadata and diff, check submission quality (commits, CI, scope), render regression detection gate, and produce both code findings and process findings. Should end with a teammate approval verdict.",
+      "assertions": [
+        {"text": "MR/PR mode activated", "type": "contains_any", "values": ["MR/PR", "pull request", "mr-review"]},
+        {"text": "Submission metadata checked", "type": "contains_any", "values": ["Commits:", "Gate:", "Scope:"]},
+        {"text": "Teammate approval verdict rendered", "type": "contains_any", "values": ["APPROVE", "BLOCK", "REVIEW"]}
+      ],
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "/deep-review last 3 commits",
+      "expected_output": "Review of the last 3 commits as a combined diff. Should review commit-by-commit first, then combined diff for cross-commit interactions. Scope gate should show the commit range.",
+      "assertions": [
+        {"text": "Scope correctly interpreted as commit range", "type": "contains_any", "values": ["HEAD~3", "last 3", "commit range"]},
+        {"text": "Phase 1 completion gate rendered", "type": "contains", "value": "Phase 1 complete"}
+      ],
       "files": []
     }
   ]

@@ -1,6 +1,6 @@
 ---
 name: deep-review
-description: "Deep code review with verification - correctness, security, performance, and robustness analysis. Use when reviewing code, checking changes, auditing files, verifying commits, or any request for thorough code examination. Triggers on: 'deep review', 'review my changes', 'check my code', 'is this safe to merge', 'audit this', 'review MR/PR'. NOT for quick glances (use soft-review)."
+description: "Deep code review with verification - correctness, security, performance, and robustness analysis. ALWAYS use this skill when the user mentions: reviewing code, checking changes, auditing a file or directory, verifying a commit, 'is this safe to merge', 'review my last commit', 'check my changes', 'deep review', 'audit this', 'make sure it's secure', 'look for bugs', or any request to thoroughly examine code for correctness, security, performance, or quality. Also triggers on: 'review staged changes', 'pre-commit check', reviewing specific files or directories, commit ranges, 'what I changed today', security audits, and verifying refactors didn't break anything. For MR/PR reviews: 'deep review MR', 'thorough review', 'should this merge', 'is this MR safe'. NOT for quick MR/PR glances - use a lighter review skill for those."
 argument-hint: "[scope: staged | last commit | last N commits | file/dir path | commit range | MR/PR URL | !N | #N | --design]"
 user_invocable: true
 allowed-tools: [Read, Glob, Grep, Agent, Skill, Bash(git diff:*), Bash(git log:*), Bash(git show:*), Bash(git blame:*), Bash(git status:*), Bash(git rev-parse:*), Bash(git diff-tree:*), Bash(git fetch:*), Bash(wc:*), Bash(grep:*), Bash(head:*), Bash(sed:*), Bash(python3:*), Bash(open:*), Bash(screencapture:*), Bash(gh:*), Bash(glab:*), Bash(GITLAB_HOST=*), Bash(codex:*), Bash(cursor:*), Bash(timeout*bob:*), Bash(bob:*)]
@@ -28,14 +28,14 @@ $ARGUMENTS
 
 These apply throughout. Internalize them before starting.
 
-**NEVER flag:**
-- Pre-existing issues (unless the change makes them worse) — diff/MR mode only; in audit mode the current state IS the subject
-- Intentional behavior clear from commit messages or context
-- Linter/compiler territory (formatting, unused imports, type errors tooling catches)
-- Style preferences without explicit project conventions
-- Hypothetical issues without a concrete triggering scenario
-- Issues on unchanged lines when reviewing diffs — diff/MR mode only
-- "Best practice" suggestions that don't prevent a concrete problem
+**What NOT to flag** — these create noise that drowns out real findings:
+- Pre-existing issues (unless the change makes them worse) — the author didn't introduce them, so flagging them is unfair and distracting. Exception: audit mode, where the current state IS the subject.
+- Intentional behavior clear from commit messages or context — the author chose this deliberately.
+- Linter/compiler territory (formatting, unused imports, type errors) — automated tools catch these better than review.
+- Style preferences without explicit project conventions — without a convention to cite, it's just opinion.
+- Hypothetical issues without a concrete triggering scenario — if you can't construct the failure, it's speculation.
+- Issues on unchanged lines when reviewing diffs — same as pre-existing; the author didn't touch them.
+- "Best practice" suggestions that don't prevent a concrete problem — the reviewer's job is to catch bugs, not teach patterns.
 
 **Precision over volume** — one confirmed finding with evidence beats ten speculative ones. When in doubt, downgrade severity. When still in doubt, drop the finding entirely.
 
@@ -200,7 +200,7 @@ Phase 1 complete:
 
 ## Phase 1.5: Logic & Approach Analysis
 
-Before checking whether the code is CORRECT, check whether the APPROACH is SOUND. Syntactically perfect code that solves the wrong problem or references nonexistent resources will fail at runtime.
+Before checking whether the code is CORRECT, check whether the APPROACH is SOUND. This phase exists because the most expensive review failures aren't missed bugs — they're reviews that verify the syntax of code that solves the wrong problem or references resources that don't exist. Catching approach issues early saves the entire Phase 2 analysis from being wasted effort.
 
 **Agent dispatch** (adapted to tier):
 
@@ -267,9 +267,9 @@ Read `references/checklist.md` and walk through each applicable dimension:
 Before adding a finding to your list:
 1. **Construct a concrete trigger** — specific input, state, or sequence
 2. **Check existing defenses** — framework, upstream validation, middleware?
-3. **Sibling check** — grep the codebase for the same pattern:
+3. **Sibling check** — grep the codebase for the same pattern. This catches a common false positive: flagging code that follows the project's own established conventions. The author followed the pattern, they didn't create the problem.
    `Sibling check: grep '<pattern>' <codebase> -> N hits | Convention? [YES -> DOWNGRADE | NO -> keep] | Security? [YES -> KEEP regardless]`
-   If the pattern exists in 2+ sibling files AND is NOT a security issue, it's an established convention — downgrade or drop.
+   If the pattern exists in 2+ sibling files AND is NOT a security issue, it's an established convention — downgrade or drop. Security issues that are widespread are WORSE, not better — flag as "systemic: N files affected."
 4. **Cross-reference tests** — do existing tests cover this path?
 5. **Cite exact `file:line`** — verify each citation with Read
 
@@ -324,7 +324,7 @@ Any ALWAYS row with blank Dispatched? -> STOP and dispatch.
 
 ## Phase 3: Verify & Filter
 
-**Switch to adversarial mode.** Your goal is now to DISPROVE each finding. You have confirmation bias from analysis — fight it.
+**Switch to adversarial mode.** Your goal is now to DISPROVE each finding. This mental shift matters because the analysis phase creates confirmation bias — once you've identified a pattern as a "bug," your brain (or weights) resist reclassifying it. The antidote is to actively seek reasons each finding is wrong. A finding that survives genuine disproof attempts is trustworthy; one that only survived because you didn't try to disprove it is noise.
 
 For each finding:
 
