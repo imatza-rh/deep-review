@@ -1,0 +1,23 @@
+{
+  "skill_name": "deep-review",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "/deep-review last commit",
+      "expected_output": "A well-structured review of the last commit with proper severity classification, no false positives, and a clear verdict. Should use confidence tags (confirmed/likely/verify) and include the Files table if 3+ files changed.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "/deep-review staged",
+      "expected_output": "Review of staged changes only. If nothing is staged, should report 'Nothing staged for commit' and stop. Otherwise, full review of staged diff with appropriate tier selection.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "/deep-review src/",
+      "expected_output": "Audit mode review of the src directory. Should negotiate scope if >200 files, dispatch parallel agents for 10+ files, and produce a project assessment covering CI gates, test infrastructure, and documentation quality.",
+      "files": []
+    }
+  ]
+}
