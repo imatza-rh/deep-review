@@ -3,7 +3,6 @@ name: deep-review
 description: "Deep code review with verification - correctness, security, performance, and robustness analysis. ALWAYS use this skill when the user mentions: reviewing code, checking changes, auditing a file or directory, verifying a commit, 'is this safe to merge', 'review my last commit', 'check my changes', 'deep review', 'audit this', 'make sure it's secure', 'look for bugs', or any request to thoroughly examine code for correctness, security, performance, or quality. Also triggers on: 'review staged changes', 'pre-commit check', reviewing specific files or directories, commit ranges, 'what I changed today', security audits, and verifying refactors didn't break anything. For MR/PR reviews: 'deep review MR', 'thorough review', 'should this merge', 'is this MR safe'. NOT for quick MR/PR glances - use a lighter review skill for those."
 argument-hint: "[scope: staged | last commit | last N commits | file/dir path | commit range | MR/PR URL | !N | #N | --design]"
 user_invocable: true
-model: claude-opus-4-6
 dependencies:
   cli: [git]
 allowed-tools: [Read, Glob, Grep, Agent, Skill, Bash(git diff:*), Bash(git log:*), Bash(git show:*), Bash(git blame:*), Bash(git status:*), Bash(git rev-parse:*), Bash(git diff-tree:*), Bash(git fetch:*), Bash(wc:*), Bash(grep:*), Bash(head:*), Bash(sed:*), Bash(python3:*), Bash(open:*), Bash(screencapture:*), Bash(gh:*), Bash(glab:*), Bash(GITLAB_HOST=*), Bash(codex:*), Bash(cursor:*), Bash(timeout*bob:*), Bash(bob:*)]
